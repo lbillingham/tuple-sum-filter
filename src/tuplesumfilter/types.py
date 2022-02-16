@@ -15,10 +15,12 @@ you may not want to add types to it
 N.B. we are stuck with `Union[spam, ham]` rather that `spam | ham`
 until we only support python>=3.10
 """
+import pathlib
 import typing as typ
 
 Int = int
 List = typ.List
 Num = typ.Union[int, float]
 PairsOfNums = typ.List[typ.Tuple[Num, Num]]
+Pathlike = typ.Union[str, pathlib.Path]
 Sequence = typ.Sequence
