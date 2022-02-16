@@ -4,6 +4,10 @@ A library to play with filtering numeric sequences by sums of their pairs, tripl
 
 Comes with a bonus CLI to demo the functionality.
 
+Requires (and CI tests on) python 3.8 to 3.10.
+If you need to use python 3.7 then try replacing
+`math.prod(some_iterable)` with `functools.reduce(lambda x, y: x * y, some_iterable)`
+
 ## Approach
 
 We're thinking of this mostly as a library with the CLI as only for demo purposes.
@@ -19,7 +23,7 @@ Ways you can see this in the code:
 
 ## Running the demo
 
-in a fresh virtualenv
+in a fresh virtualenv (python>=3.8)
 
 ```sh
 # install project and deps
