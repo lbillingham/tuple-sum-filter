@@ -18,3 +18,17 @@ for now
 > Premature optimization is the root of all evil
 
 and all that.
+
+## Should we support `floats` ?
+
+All the examples are integers. Theoretically we could support `floats` too.
+Though we might run into some weird `float` "equality" bugs.
+
+## should we support multiple matches
+
+Again all the examples seem to have a single match.
+But I think we should support multiple matches,
+there will be a bit of a perf downside in the case of a
+single match because we won't do an early return.
+
+But we're not going for performance yet.
