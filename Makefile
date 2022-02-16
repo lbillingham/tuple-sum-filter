@@ -5,6 +5,7 @@ all:
 	@echo "lint              - Run static analysis for common problems"
 	@echo "autoformat        - Format all code to a consistent style"
 	@echo "coverage          - Run tests and check the test coverage"
+	@echo "benchmark         - Run a small suite to check performance"
 	@echo "ci_install        - Install dependencies needed for CI"
 	@echo "fixed_install     - Install as a non-editible package like production consumers"
 	@echo "clean             - Delete generated files"
@@ -13,6 +14,9 @@ all:
 
 test:
 	python -m pytest
+
+benchmark:
+	python -m pytest tests/performance*
 
 coverage:
 	python -m pytest --cov=tuplesumfilter tests --cov-fail-under 90
@@ -50,4 +54,4 @@ dist: clean
 release: dist
 	twine upload dist/*.*
 
-.PHONY: all autoformat ci_install clean coverage dev_install dist fixed_install test typecheck
+.PHONY: all autoformat benchmark ci_install clean coverage dev_install dist fixed_install test typecheck

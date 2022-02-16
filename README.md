@@ -50,7 +50,6 @@ They both have signatures `(numbers: Sequence[int|float], sum_target: int|float)
 
 There is also a file-reading helper `numbers_in_file` exported at the top level.
 
-
 ## Developing
 
 Run the following to install the project (and dev dependencies) into your active virtualenv:
@@ -69,6 +68,28 @@ day-to-day development tasks can be orchestrated via `make`
 There is a CI suite which runs lint and test on several python versions.
 We don't run typechecking as a gate in CI because we think that
 turns a sometimes-useful tool into a [Goodhart target](https://en.wikipedia.org/wiki/Goodhart%27s_law).
+
+## Performance
+
+We have not been optimizing for performance and it kind of shows.
+
+When we run the benchmarking suite we see ~0.4 seconds fairly consistently for the triplet/3D problem.
+
+We have at least 3 ideas of how to speed things up: several of them include dropping floating-point support.
+
+```sh
+$ make benchmark
+
+tests/performance_check.py ..                                                                                                                                [100%]
+
+
+------------------------------------------------------------------------------------- benchmark: 2 tests ------------------------------------------------------------------------------------
+Name (time in ms)             Min                 Max                Mean            StdDev              Median               IQR            Outliers       OPS            Rounds  Iterations
+---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+test_input1_pairs          5.4665 (1.0)        6.2297 (1.0)        5.6687 (1.0)      0.1018 (1.0)        5.6575 (1.0)      0.1289 (1.0)          47;3  176.4077 (1.0)         172           1
+test_input1_triplets     384.6154 (70.36)    386.5000 (62.04)    385.4776 (68.00)    0.8287 (8.14)     385.4333 (68.13)    1.5047 (11.67)         2;0    2.5942 (0.01)          5           1
+---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+```
 
 --
 
