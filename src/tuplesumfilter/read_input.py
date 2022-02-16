@@ -21,7 +21,11 @@ def numbers_in_file(filepath: t.Pathlike) -> t.Sequence[t.Num]:
         ## no-op here so we can try parsing as floats
     try:
         logger.debug("trying to read file-contents as floats")
-        return [float(s) for s in could_be_numbers]
+        as_floats = [float(s) for s in could_be_numbers]
+        logger.info(
+            "File-contents read as floats: beware floating-point equality when considering filter matches"
+        )
+        return as_floats
     except ValueError as verr:
         mess = f"Cannot read {filepath}: format is newline-seperated list of numbers"
         logger.error(f"Failed to read file::: {mess}")

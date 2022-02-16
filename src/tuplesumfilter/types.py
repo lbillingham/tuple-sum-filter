@@ -25,5 +25,5 @@ PairsOfNums = typ.List[typ.Tuple[Num, Num]]
 Pathlike = typ.Union[str, pathlib.Path]
 Sequence = typ.Sequence
 Str = str
-TriosOfNums = typ.List[typ.Tuple[Num, Num, Num]]
+TripletsOfNums = typ.List[typ.Tuple[Num, Num, Num]]
 TuplePassedFilter = typ.Union[typ.Tuple[Num, Num], typ.Tuple[Num, Num, Num]]
