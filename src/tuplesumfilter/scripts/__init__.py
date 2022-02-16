@@ -1,6 +1,6 @@
 import click
 
-from tuplesumfilter import numbers_in_file, pairs_that_sum_to
+from tuplesumfilter import numbers_in_file, pairs_that_sum_to, triplets_that_sum_to
 from tuplesumfilter.output import FilterResult, dimensions_for_display
 from tuplesumfilter import types as t
 from tuplesumfilter.app_logging import get_logger
@@ -36,7 +36,8 @@ def cli(input_file: t.Pathlike, sum_target: t.Num, dimension: t.Str):
     click.echo(
         f"checking for {dims_disp}s of numbers that sum to {sum_target} in {input_file}"
     )
-    results = pairs_that_sum_to(numbers, sum_target)
+    filterer = pairs_that_sum_to if numeric_dimension == 2 else triplets_that_sum_to
+    results = filterer(numbers, sum_target)
     if not results:
         click.echo(
             f"No matches found for {dims_disp} in {input_file} that sum to {sum_target}"
