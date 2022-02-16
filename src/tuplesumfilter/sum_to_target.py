@@ -16,10 +16,10 @@ def pairs_that_sum_to(numbers: t.Sequence[t.Num], sum_target: t.Num) -> t.PairsO
         len_input=len(numbers),
         algo="itertools",
     )
-    pairs = itertools.combinations(numbers, 2)
-    filtered = [pair for pair in pairs if sum(pair) == sum_target]
-    logger.debug(f"found {len(filtered)} pair sequences that sum to {sum_target}")
-    return filtered
+    pairs = list(ntuples_that_sum_to(numbers, sum_target, 2))
+    logger.debug(f"found {len(pairs)} pair sequences that sum to {sum_target}")
+    # i promise mypy that we _are_ narrowing the types here
+    return t.cast(t.PairsOfNums, pairs)
 
 
 def triplets_that_sum_to(
@@ -31,11 +31,32 @@ def triplets_that_sum_to(
         len_input=len(numbers),
         algo="itertools",
     )
-    triplets = itertools.combinations(numbers, 3)
-    filtered = [
-        triplet
-        for triplet in triplets
-        if math.isclose(sum(triplet), sum_target, rel_tol=FLOAT_COMPARISON_REL_TOL)
-    ]
-    logger.debug(f"found {len(filtered)} triplet sequences that sum to {sum_target}")
+    triplets = list(ntuples_that_sum_to(numbers, sum_target, 3))
+    logger.debug(f"found {len(triplets)} triplet sequences that sum to {sum_target}")
+    # i promise mypy, again, that we _are_ narrowing the types here
+    return t.cast(t.TripletsOfNums, triplets)
+
+
+def ntuples_that_sum_to(
+    numbers: t.Sequence[t.Num], sum_target: t.Num, dimensions: t.Int
+) -> t.Generator[t.NTupelOfNums, None, None]:
+    """
+    Filters a the input `numbers` by whether their n-tuple combinations
+    sum to match the `sum_target`, the n in n-tuple is controlled by `dimensions`.
+    e.g. pairs of numbers for dimenions==2
+
+    Returns
+    -------
+    A generator from which we can pull the matching combinations.
+
+    >>> input = [1, 2, 3, 4]
+    >>> list(ntuples_that_sum_to(input, 7, 3))
+    >>> [(1, 2, 4)]
+    """
+    n_tuples = itertools.combinations(numbers, dimensions)
+    filtered = (
+        n_tuple
+        for n_tuple in n_tuples
+        if math.isclose(sum(n_tuple), sum_target, rel_tol=FLOAT_COMPARISON_REL_TOL)
+    )
     return filtered

@@ -18,9 +18,13 @@ until we only support python>=3.10
 import pathlib
 import typing as typ
 
+cast = typ.cast
+
+Generator = typ.Generator
 Int = int
 List = typ.List
 Num = typ.Union[int, float]
+NTupelOfNums = typ.Tuple[Num, ...]
 PairsOfNums = typ.List[typ.Tuple[Num, Num]]
 Pathlike = typ.Union[str, pathlib.Path]
 Sequence = typ.Sequence
