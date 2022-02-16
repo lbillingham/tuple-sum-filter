@@ -1,0 +1,11 @@
+[tool.coverage.run]
+parallel = true
+branch = true
+source = ["tuplesumfilter"]
+omit = ["tests/*"]
+
+[tool.coverage.paths]
+source = ["src", ".tox/*/site-packages"]
+
+[tool.coverage.report]
+show_missing = true
