@@ -24,9 +24,7 @@ setup(
     author_email="laurence.billingham+wflyr@gmail.com",
     packages=find_packages(where="src"),
     package_dir={"": "src"},
-    install_requires=[
-        "click==8.0.3",
-    ],
+    install_requires=["click>=8.0.3", "structlog>=1.5.0"],
     extras_require=EXTRAS_REQUIRE,
     entry_points={"console_scripts": ["filter_demo=tuplesumfilter.scripts:cli"]},
 )
