@@ -15,7 +15,7 @@ test:
 	python -m pytest
 
 coverage:
-	python -m pytest --cov=lbillinghamcodingtest tests --cov-fail-under 90
+	python -m pytest --cov=tuplesumfilter tests --cov-fail-under 90
 
 typecheck:
 	python -m mypy ./src ./tests
