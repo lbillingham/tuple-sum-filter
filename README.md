@@ -19,7 +19,9 @@ day-to-day development tasks can be orchestrated via `make`
 - coverage reporting
 - run `make` without any arguments to see a list
 
-There is a CI suite which runs lint and test on several python versions
+There is a CI suite which runs lint and test on several python versions.
+We don't run typechecking as a gate in CI because we think that
+turns a sometimes-useful tool into a [Goodhart target](https://en.wikipedia.org/wiki/Goodhart%27s_law).
 
 --
 
