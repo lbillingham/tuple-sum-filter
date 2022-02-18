@@ -9,6 +9,11 @@ FLOAT_COMPARISON_REL_TOL = 1e-8
 logger = get_logger()
 
 
+def _comparitor(number: t.Num, sum_target: t.Num) -> t.Boolean:
+    """really just a single place to switch between == and math.isclose"""
+    return math.isclose(number, sum_target, rel_tol=1e-09)
+
+
 def pairs_that_sum_to(numbers: t.Sequence[t.Num], sum_target: t.Num) -> t.PairsOfNums:
     logger.bind(
         sum_kind="pairs", sum_target=sum_target, len_input=len(numbers), algo="nested"
@@ -16,7 +21,7 @@ def pairs_that_sum_to(numbers: t.Sequence[t.Num], sum_target: t.Num) -> t.PairsO
     summed = []
     for ileft, left in enumerate(numbers):
         for right in numbers[ileft + 1 :]:
-            if math.isclose(sum_target, left + right, rel_tol=1e-09):
+            if _comparitor(left + right, sum_target):
                 summed.append((left, right))
     logger.debug(f"found {len(summed)} pair sequences that sum to {sum_target}")
     return summed
@@ -29,12 +34,16 @@ def triplets_that_sum_to(
         sum_kind="triplets",
         sum_target=sum_target,
         len_input=len(numbers),
-        algo="itertools",
+        algo="nested",
     )
-    triplets = list(ntuples_that_sum_to(numbers, sum_target, 3))
-    logger.debug(f"found {len(triplets)} triplet sequences that sum to {sum_target}")
-    # i promise mypy, again, that we _are_ narrowing the types here
-    return t.cast(t.TripletsOfNums, triplets)
+    summed = []
+    for ileft, left in enumerate(numbers):
+        for jcentre, center in enumerate(numbers[ileft + 1 :]):
+            for right in numbers[(ileft + jcentre + 2) :]:
+                if _comparitor(left + center + right, sum_target):
+                    summed.append((left, center, right))
+    logger.debug(f"found {len(summed)} triplet sequences that sum to {sum_target}")
+    return summed
 
 
 def ntuples_that_sum_to(

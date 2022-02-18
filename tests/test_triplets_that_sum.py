@@ -34,3 +34,8 @@ def test_triplets_with_finite_input_but_no_match(worked_example_nums):
 def test_triplets_when_multiple_matches():
     input = [10, 979, 5, 299, 2, 1456, 6, 8, 3]
     assert triplets_that_sum_to(input, 17) == [(10, 5, 2), (6, 8, 3)]
+
+
+def test_regression_triplets_excludes_repeats():
+    got = triplets_that_sum_to([1, 2, 7, 8, 9], 4)
+    assert got == []
