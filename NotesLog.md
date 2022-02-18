@@ -57,3 +57,11 @@ test_input1_pairs          5.4665 (1.0)        6.2297 (1.0)        5.6687 (1.0) 
 test_input1_triplets     384.6154 (70.36)    386.5000 (62.04)    385.4776 (68.00)    0.8287 (8.14)     385.4333 (68.13)    1.5047 (11.67)         2;0    2.5942 (0.01)          5           1
 ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 ```
+
+## if you want to go faster
+
+We're going to have to break apart the itertools into the underlying nested loops
+before we can mess with the aglo.
+
+but 1st lets split out the float-y bits of the tests, because i think we might want to
+make it easier to stop supporting floats and lose those tests.
