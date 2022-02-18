@@ -11,15 +11,15 @@ logger = get_logger()
 
 def pairs_that_sum_to(numbers: t.Sequence[t.Num], sum_target: t.Num) -> t.PairsOfNums:
     logger.bind(
-        sum_kind="pairs",
-        sum_target=sum_target,
-        len_input=len(numbers),
-        algo="itertools",
+        sum_kind="pairs", sum_target=sum_target, len_input=len(numbers), algo="nested"
     )
-    pairs = list(ntuples_that_sum_to(numbers, sum_target, 2))
-    logger.debug(f"found {len(pairs)} pair sequences that sum to {sum_target}")
-    # i promise mypy that we _are_ narrowing the types here
-    return t.cast(t.PairsOfNums, pairs)
+    summed = []
+    for ileft, left in enumerate(numbers):
+        for right in numbers[ileft:]:
+            if math.isclose(sum_target, left + right, rel_tol=1e-09):
+                summed.append((left, right))
+    logger.debug(f"found {len(summed)} pair sequences that sum to {sum_target}")
+    return summed
 
 
 def triplets_that_sum_to(
@@ -58,5 +58,6 @@ def ntuples_that_sum_to(
         n_tuple
         for n_tuple in n_tuples
         if math.isclose(sum(n_tuple), sum_target, rel_tol=FLOAT_COMPARISON_REL_TOL)
+        # if sum(n_tuple) == sum_target
     )
     return filtered
