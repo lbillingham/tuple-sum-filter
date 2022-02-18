@@ -15,7 +15,7 @@ def pairs_that_sum_to(numbers: t.Sequence[t.Num], sum_target: t.Num) -> t.PairsO
     )
     summed = []
     for ileft, left in enumerate(numbers):
-        for right in numbers[ileft:]:
+        for right in numbers[ileft + 1 :]:
             if math.isclose(sum_target, left + right, rel_tol=1e-09):
                 summed.append((left, right))
     logger.debug(f"found {len(summed)} pair sequences that sum to {sum_target}")
