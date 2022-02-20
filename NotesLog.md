@@ -133,7 +133,7 @@ its relatively common to speed algos up by trading off some memory
 for reduced CPU tome complexity.
 
 I reckon we can do that here using something to keep track of values we've already seen
-it'll need to be a fast, O(1), lookup thing: so a `set` or `dict`.
+it'll need to be a fast, $O{1}$, lookup thing: so a `set` or `dict`.
 
 However, we'll need to ditch `float` support because they don't hash.
 
@@ -154,3 +154,25 @@ test_input1_triplets     176,173.4430 (>1000.0)  188,509.7390 (>1000.0)  184,815
 ```
 
 that is > a 200x (nearly 250x) speedup for the pairs.
+
+
+I'll split the float test out further using `pytest` markers and fix up the makefile.
+
+Now lets do stuff for the triplet version
+
+
+```sh
+$ make benchmark
+tests/performance_check.py ..                                                                                                                             [100%]
+
+-------------------------------------------------------------------------------------------- benchmark: 2 tests --------------------------------------------------------------------------------------------
+Name (time in us)               Min                   Max                  Mean              StdDev                Median                 IQR            Outliers          OPS            Rounds  Iterations
+------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+test_input1_pairs           22.1660 (1.0)        166.3790 (1.0)         23.6089 (1.0)        5.0170 (1.0)         23.0000 (1.0)        0.5123 (1.0)        87;521  42,356.8183 (1.0)        7677           1
+test_input1_triplets     1,994.8000 (89.99)    3,561.1120 (21.40)    2,152.1272 (91.16)    204.1428 (40.69)    2,033.1040 (88.40)    299.1878 (584.07)       41;4     464.6565 (0.01)        341           1
+------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+```
+
+again note the unit changer for the triplets,
+even though we're still (i think $O{n^2}$, down from $O{n^3}$)
+we are seeing an approx 175x speedup in the triplets

@@ -1,6 +1,3 @@
-import itertools
-import math
-
 import tuplesumfilter.types as t
 from tuplesumfilter.app_logging import get_logger
 
@@ -43,9 +40,11 @@ def triplets_that_sum_to(
     )
     summed = []
     for ileft, left in enumerate(numbers):
-        for jcentre, center in enumerate(numbers[ileft + 1 :]):
-            for right in numbers[(ileft + jcentre + 2) :]:
-                if _comparitor(left + center + right, sum_target):
-                    summed.append((left, center, right))
+        already_seen = set()
+        still_need = sum_target - left
+        for right in numbers[ileft + 1 :]:
+            if still_need - right in already_seen:
+                summed.append((left, (sum_target - left - right), right))
+            already_seen.add(right)
     logger.debug(f"found {len(summed)} triplet sequences that sum to {sum_target}")
     return summed
