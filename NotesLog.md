@@ -126,3 +126,31 @@ Legend:
   OPS: Operations Per Second, computed as 1 / Mean
 ======================================================================================================= 2 passed in 4.81s ========================================================================================================
 ```
+
+### trading space for speed
+
+its relatively common to speed algos up by trading off some memory
+for reduced CPU tome complexity.
+
+I reckon we can do that here using something to keep track of values we've already seen
+it'll need to be a fast, O(1), lookup thing: so a `set` or `dict`.
+
+However, we'll need to ditch `float` support because they don't hash.
+
+Okaaaay
+
+That gives us a big speedup in the pair version: note that we are now measuring _micro_ not _milli_ seconds
+
+```sh
+tests/performance_check.py ..                                                                                                                             [100%]
+
+
+-------------------------------------------------------------------------------------------------- benchmark: 2 tests --------------------------------------------------------------------------------------------------
+Name (time in us)                 Min                     Max                    Mean                StdDev                  Median                   IQR            Outliers          OPS            Rounds  Iterations
+------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+test_input1_pairs             22.1710 (1.0)          152.1860 (1.0)           23.5753 (1.0)          5.5831 (1.0)           22.8580 (1.0)          0.4057 (1.0)       114;461  42,417.2354 (1.0)        7671           1
+test_input1_triplets     176,173.4430 (>1000.0)  188,509.7390 (>1000.0)  184,815.9523 (>1000.0)  4,741.3658 (849.24)   186,896.7185 (>1000.0)  5,253.1090 (>1000.0)       1;0       5.4108 (0.00)          6           1
+------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+```
+
+that is > a 200x (nearly 250x) speedup for the pairs.

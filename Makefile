@@ -13,10 +13,13 @@ all:
 	@echo "release           - Build distribution and release to PyPI."
 
 test:
-	python -m pytest
+	python -m pytest -m 'not benchmark' -m 'not floats'
+
+test_with_floats:
+	python -m pytest -m 'not benchmark'
 
 benchmark:
-	python -m pytest tests/performance*
+	python -m pytest -m benchmark tests/performance*
 
 coverage:
 	python -m pytest --cov=tuplesumfilter tests --cov-fail-under 90

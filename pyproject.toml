@@ -9,3 +9,9 @@ source = ["src", ".tox/*/site-packages"]
 
 [tool.coverage.report]
 show_missing = true
+
+[tool.pytest.ini_options]
+markers = [
+    "benchmark: marks tests as for performance benchmarking: they are slow (deselect with '-m \"not benchmark\"')",
+    "floats: marks tests as for testing floating point support: some algorithms don't work for floats (deselect with '-m \"not float\"')",
+]

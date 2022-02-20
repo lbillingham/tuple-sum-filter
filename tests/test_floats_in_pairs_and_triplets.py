@@ -3,6 +3,8 @@ from math import e, pi, sqrt
 import pytest
 from tuplesumfilter import pairs_that_sum_to, triplets_that_sum_to
 
+pytestmark = pytest.mark.floats
+
 
 def test_triplets_works_approx_with_floats():
     root2 = sqrt(2)
