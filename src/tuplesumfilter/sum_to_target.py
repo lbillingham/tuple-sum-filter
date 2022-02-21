@@ -6,12 +6,6 @@ FLOAT_COMPARISON_REL_TOL = 1e-8
 logger = get_logger()
 
 
-def _comparitor(number: t.Num, sum_target: t.Num) -> t.Boolean:
-    """really just a single place to switch between == and math.isclose"""
-    return number == sum_target
-    # return math.isclose(number, sum_target, rel_tol=1e-09)
-
-
 def pairs_that_sum_to(numbers: t.Sequence[t.Num], sum_target: t.Num) -> t.PairsOfNums:
     logger.bind(
         sum_kind="pairs",
