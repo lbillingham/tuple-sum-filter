@@ -1,6 +1,9 @@
 from pathlib import Path
+import pytest
 
 from tuplesumfilter import numbers_in_file, pairs_that_sum_to, triplets_that_sum_to
+
+pytestmark = pytest.mark.benchmark
 
 INPUT1_FILE = Path("./tests/__test_data__") / "input1.txt"
 

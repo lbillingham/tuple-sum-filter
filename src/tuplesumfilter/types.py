@@ -20,6 +20,7 @@ import typing as typ
 
 cast = typ.cast
 
+Boolean = bool
 Generator = typ.Generator
 Int = int
 List = typ.List

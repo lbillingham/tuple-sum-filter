@@ -49,7 +49,6 @@ eugh that it pretty bad ~0.4 for the triplets version
 $ make benchmark
 tests/performance_check.py ..                                                                                                                                [100%]
 
-
 ------------------------------------------------------------------------------------- benchmark: 2 tests ------------------------------------------------------------------------------------
 Name (time in ms)             Min                 Max                Mean            StdDev              Median               IQR            Outliers       OPS            Rounds  Iterations
 ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
@@ -57,3 +56,123 @@ test_input1_pairs          5.4665 (1.0)        6.2297 (1.0)        5.6687 (1.0) 
 test_input1_triplets     384.6154 (70.36)    386.5000 (62.04)    385.4776 (68.00)    0.8287 (8.14)     385.4333 (68.13)    1.5047 (11.67)         2;0    2.5942 (0.01)          5           1
 ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 ```
+
+## if you want to go faster
+
+We're going to have to break apart the itertools into the underlying nested loops
+before we can mess with the aglo.
+
+but 1st lets split out the float-y bits of the tests, because i think we might want to
+make it easier to stop supporting floats and lose those tests.
+
+wow, even just replacing the `math.isclose` in favor of simple `==`
+gets us a ~30% speed up on the (`int` only) benchmarks.
+
+```sh
+$ make benchmark
+tests/performance_check.py ..                                                                                                      [100%]
+
+------------------------------------------------------------------------------------- benchmark: 2 tests ------------------------------------------------------------------------------------
+Name (time in ms)             Min                 Max                Mean            StdDev              Median               IQR            Outliers       OPS            Rounds  Iterations
+---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+test_input1_pairs          2.8727 (1.0)        4.2386 (1.0)        3.1265 (1.0)      0.1638 (1.0)        3.1067 (1.0)      0.1888 (1.0)          78;9  319.8414 (1.0)         326           1
+test_input1_triplets     211.6325 (73.67)    213.3950 (50.35)    212.4042 (67.94)    0.6555 (4.00)     212.2717 (68.33)    0.8081 (4.28)          2;0    4.7080 (0.01)          5           1
+---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+
+Legend:
+  Outliers: 1 Standard Deviation from Mean; 1.5 IQR (InterQuartile Range) from 1st Quartile and 3rd Quartile.
+  OPS: Operations Per Second, computed as 1 / Mean
+=========================================================== 2 passed in 3.59s ============================================================
+```
+
+but this does make some of our floaty tests fail.
+
+## simple nested loops for pairwise
+
+looks like we're seeing an perf improvement over itertools just by breaking out into loops for the pairs
+roughly the same speedup we got by dropping float support, but we're back using `math.isclose`
+
+```sh
+tests/performance_check.py ..                                                                                                                                                     [100%]
+
+------------------------------------------------------------------------------------- benchmark: 2 tests ------------------------------------------------------------------------------------
+Name (time in ms)             Min                 Max                Mean            StdDev              Median               IQR            Outliers       OPS            Rounds  Iterations
+---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+test_input1_pairs          3.0859 (1.0)        6.3263 (1.0)        3.4614 (1.0)      0.2696 (1.0)        3.4232 (1.0)      0.2591 (1.0)          44;6  288.8998 (1.0)         298           1
+test_input1_triplets     392.5019 (127.19)   394.4756 (62.36)    393.5971 (113.71)   0.8023 (2.98)     393.7625 (115.03)   1.2974 (5.01)          2;0    2.5407 (0.01)          5           1
+---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+
+Legend:
+  Outliers: 1 Standard Deviation from Mean; 1.5 IQR (InterQuartile Range) from 1st Quartile and 3rd Quartile.
+  OPS: Operations Per Second, computed as 1 / Mean
+=================================================================================== 2 passed in 4.87s ===================================================================================
+```
+
+and now we've moved the triplets to nested loops too
+
+```sh
+tests/performance_check.py ..                                                                                                                                                                                              [100%]
+
+
+------------------------------------------------------------------------------------- benchmark: 2 tests ------------------------------------------------------------------------------------
+Name (time in ms)             Min                 Max                Mean            StdDev              Median               IQR            Outliers       OPS            Rounds  Iterations
+---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+test_input1_pairs          4.6867 (1.0)        9.1275 (1.0)        5.5921 (1.0)      0.8257 (1.0)        5.3198 (1.0)      0.8444 (1.0)         23;12  178.8246 (1.0)         193           1
+test_input1_triplets     371.6804 (79.31)    376.8461 (41.29)    374.2332 (66.92)    2.3729 (2.87)     373.5280 (70.21)    4.3788 (5.19)          3;0    2.6721 (0.01)          5           1
+---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+
+Legend:
+  Outliers: 1 Standard Deviation from Mean; 1.5 IQR (InterQuartile Range) from 1st Quartile and 3rd Quartile.
+  OPS: Operations Per Second, computed as 1 / Mean
+======================================================================================================= 2 passed in 4.81s ========================================================================================================
+```
+
+### trading space for speed
+
+its relatively common to speed algos up by trading off some memory
+for reduced CPU tome complexity.
+
+I reckon we can do that here using something to keep track of values we've already seen
+it'll need to be a fast, $O{1}$, lookup thing: so a `set` or `dict`.
+
+However, we'll need to ditch `float` support because they don't hash.
+
+Okaaaay
+
+That gives us a big speedup in the pair version: note that we are now measuring _micro_ not _milli_ seconds
+
+```sh
+tests/performance_check.py ..                                                                                                                             [100%]
+
+
+-------------------------------------------------------------------------------------------------- benchmark: 2 tests --------------------------------------------------------------------------------------------------
+Name (time in us)                 Min                     Max                    Mean                StdDev                  Median                   IQR            Outliers          OPS            Rounds  Iterations
+------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+test_input1_pairs             22.1710 (1.0)          152.1860 (1.0)           23.5753 (1.0)          5.5831 (1.0)           22.8580 (1.0)          0.4057 (1.0)       114;461  42,417.2354 (1.0)        7671           1
+test_input1_triplets     176,173.4430 (>1000.0)  188,509.7390 (>1000.0)  184,815.9523 (>1000.0)  4,741.3658 (849.24)   186,896.7185 (>1000.0)  5,253.1090 (>1000.0)       1;0       5.4108 (0.00)          6           1
+------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+```
+
+that is > a 200x (nearly 250x) speedup for the pairs.
+
+
+I'll split the float test out further using `pytest` markers and fix up the makefile.
+
+Now lets do stuff for the triplet version
+
+
+```sh
+$ make benchmark
+tests/performance_check.py ..                                                                                                                             [100%]
+
+-------------------------------------------------------------------------------------------- benchmark: 2 tests --------------------------------------------------------------------------------------------
+Name (time in us)               Min                   Max                  Mean              StdDev                Median                 IQR            Outliers          OPS            Rounds  Iterations
+------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+test_input1_pairs           22.1660 (1.0)        166.3790 (1.0)         23.6089 (1.0)        5.0170 (1.0)         23.0000 (1.0)        0.5123 (1.0)        87;521  42,356.8183 (1.0)        7677           1
+test_input1_triplets     1,994.8000 (89.99)    3,561.1120 (21.40)    2,152.1272 (91.16)    204.1428 (40.69)    2,033.1040 (88.40)    299.1878 (584.07)       41;4     464.6565 (0.01)        341           1
+------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+```
+
+again note the unit changer for the triplets,
+even though we're still (i think $O{n^2}$, down from $O{n^3}$)
+we are seeing an approx 175x speedup in the triplets

@@ -1,4 +1,3 @@
-from math import e, pi, sqrt
 import pytest
 from tuplesumfilter import pairs_that_sum_to
 
@@ -28,13 +27,11 @@ def test_pairs_with_finite_input_but_no_match(worked_example_nums):
     assert pairs_that_sum_to(worked_example_nums, 0) == []
 
 
-def test_pairs_works_approx_with_floats():
-    nums = [pi, sqrt(2), 17.45, 1e-10, e]
-    target = pi + e
-    expected = [(pytest.approx(pi), pytest.approx(e))]
-    assert pairs_that_sum_to(nums, target) == expected
-
-
 def test_pairs_when_multiple_matches():
     example_input = [1, 979, 6, 299, 2, 1456, 5]
     assert pairs_that_sum_to(example_input, 7) == [(1, 6), (2, 5)]
+
+
+def test_regression_pairs_excludes_repeats():
+    got = pairs_that_sum_to([1, 2], 4)
+    assert got == []
